@@ -1,0 +1,144 @@
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static/images/icon.ico">
+<title>{{ slide_filename }}</title>
+
+<style type="text/css">
+html {
+    overflow: hidden;
+}
+body {
+    margin: 0;
+    padding: 0;
+}
+#view {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    color: white;
+}
+.btn-outline-secondary {
+    color: #000000;
+    border-color: #000000;
+}
+#div_print {
+    display: block;
+    width: 200px;
+    height: 200px;
+    float: left;
+    margin: 10px;
+    margin-top: 40px;
+}
+.center {
+    margin: auto;
+    width: 5%;
+    height: 5%;
+    border: 1px solid #db0000;
+    border-radius: 100%;
+    position: absolute;
+    top: 47.5%;
+    left: 47.5%;
+    z-index: 1;
+}
+
+</style>
+<div class="center"></div>
+<div id="view"></div>
+<div id="div_print">
+    <div class="btn-group">
+        <button id="btn_print_id" type="button" class="btn btn-outline-secondary" onclick="print()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-image" viewBox="0 0 16 16">
+            <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"></path>
+            <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z"></path>
+            </svg>
+        <span id="btn_print_label">Print</span>
+        </button>
+    </div>
+</div>
+<script type="text/javascript" src="/static/js/jquery.js"></script>
+<script type="text/javascript" src="/static/js/openseadragon.js"></script>
+<script type="text/javascript" src="/static/js/openseadragon-scalebar.js"></script>
+<script type="text/javascript">
+    var viewer = null;
+
+    $(document).ready(function() {
+        viewer = new OpenSeadragon({
+            id: "view",
+            tileSources: "{{ slide_url }}",
+            prefixUrl: "{{ url_for('static', filename='images/') }}",
+            showNavigator: true,
+            showRotationControl: true,
+            animationTime: 0.5,
+            blendTime: 0.1,
+            constrainDuringPan: true,
+            maxZoomPixelRatio: 2,
+            minZoomLevel: 1,
+            visibilityRatio: 1,
+            zoomPerScroll: 1,
+            timeout: 120000,
+        });
+        viewer.addHandler("open", function() {
+            // To improve load times, ignore the lowest-resolution Deep Zoom
+            // levels.  This is a hack: we can't configure the minLevel via
+            // OpenSeadragon configuration options when the viewer is created
+            // from DZI XML.
+            viewer.source.minLevel = 8;
+        });
+
+        var mpp = parseFloat("{{ slide_mpp }}");
+        viewer.scalebar({
+            pixelsPerMeter: mpp ? (1e6 / mpp) : 0,
+            xOffset: 10,
+            yOffset: 10,
+            barThickness: 3,
+            color: '#555555',
+            fontColor: '#333333',
+            backgroundColor: 'rgba(255, 255, 255, 0.5)',
+        });
+
+        $("#btn_print_id").hover(function(){
+            
+            if (areAllFullyLoaded()){
+                $("#btn_print_label").text("Disponível")
+            }else{
+                $("#btn_print_label").text("Carregando")
+            }
+        },
+        function(){
+            $("#btn_print_label").text("Print")
+        });
+        
+    });
+    function areAllFullyLoaded() {
+        var tiledImage;
+        var count = viewer.world.getItemCount();
+        for (var i = 0; i < count; i++) {
+            tiledImage = viewer.world.getItemAt(i);
+            if (!tiledImage.getFullyLoaded()) {
+                return false;
+            }
+        }
+        return true;
+    }
+    function print(){
+        var img = viewer.drawer.canvas.toDataURL("image/png")
+        $.ajax({
+            url: "/save_print",
+            type: "POST",
+            data:  JSON.stringify({"img":img}),
+            dataType:"json",
+            contentType:"application/json; charset=utf-8",
+            success: function(res) {
+            console.log(res);
+            },
+            error: function(res){
+                console.log(res);
+            }
+        });
+    }
+</script>
+
+<link href="/static/css/bootstrap.min.css" rel="stylesheet">
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/bootstrap.bundle.min.js"></script>

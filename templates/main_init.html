@@ -1,0 +1,181 @@
+<!doctype html>
+<head>
+    <title>Find where are your files</title>
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/static/js/jquery.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
+    <link rel="shortcut icon" href="/static/images/icon.ico">
+    <style>
+      h3 {
+          color: #fff;
+      }
+      body {
+          background-image: url(/static/images/background.png);
+      }
+
+      .nav-link {
+          color: #000;
+      }
+
+      .nav {
+          margin-bottom: 26px;
+          background: #fff4f430;
+          box-shadow: rgb(0 0 0 / 30%) -3px 4px 8px 1px;
+      }
+
+      #btn_clear {
+          margin-top: 10px;
+      }
+
+      .btn-outline-danger {
+          color: #0e0001;
+          border-color: #000000;
+      }
+
+  </style>
+
+</head>
+<body>
+  <ul class="nav">
+    <li class="nav-item">
+      <b class="nav-link active" aria-current="page">File Manager</b>
+    </li>
+  </ul>
+  <div class="container">
+      <h3>Select path</h3>
+  </div>
+
+  <div class="container">
+      <div class="card">
+          <ol class="list-group list-group-unnumbered">
+              <li class="list-group-item d-flex justify-content-between align-items-start">
+                  <div class="ms-4 me-auto">
+                      <div class="fw-bold">
+                          <input name="path_address" type="text" class="form-control" id="path_address_id" aria-describedby="path_address_help_id" placeholder="Ex.: C:/users/user1/documents/tireoide/files">
+                      </div>
+                  </div>
+                  <button type="button" class="btn btn-success" onclick="add_user_path()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
+                      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+                      <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"></path>
+                    </svg>
+                    Add Path
+                  </button>
+              </li>
+              
+              <div id='user_paths_id'>
+
+                {% for path in paths %}
+                  <li id="url_id" class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-4 me-auto">
+                        <div class="fw-bold"><a href="/?path_address={{ path }}">{{ path }}</a></div>
+                    </div>
+                    <button type="button" class="btn btn-outline-danger" onclick="remove_user_path('{{ path }}')">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"></path>
+                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"></path>
+                      </svg>
+                      Remove Path
+                    </button>
+                  </li>
+                {% endfor %}
+
+              </div>
+
+              <div id='user_files'>
+
+                {% for file in files %}
+                  <li id="url_id" class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-4 me-auto">
+                        <div class="fw-bold">
+                          <div class="fw-bold"><a href="/download/{{ file }}">{{ file }}</a></div>
+                        </div>
+                    </div>
+                  </li>
+                {% endfor %}
+
+              </div>
+          </ol>
+        </div>
+        <div>
+          <button id="btn_clear" type="button" class="btn btn-outline-danger" onclick="clear_user_path()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+            <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"></path>
+            </svg>
+            Clear all
+          </button>
+        </div>
+  </div>
+</body>
+<script>
+
+  function add_user_path(user_path){
+
+    user_path = $("#path_address_id").val().replace("/\\/g", "/").replaceAll("\\", "/")
+    console.log(user_path)
+    $.ajax({
+      url: "/add_user_path",
+      type: "POST",
+      data: JSON.stringify({'user_path':user_path}),
+      dataType:"json",
+      contentType:"application/json; charset=utf-8",
+      success: function(user_paths) {
+        update_user_paths(user_paths)
+      }
+    });
+  }
+  function remove_user_path(user_path){
+
+    user_path = user_path.replace("/\\/g", "/")
+
+    $.ajax({
+      url: "/remove_user_path",
+      type: "POST",
+      data: JSON.stringify({'user_path':user_path}),
+      dataType:"json",
+      contentType:"application/json; charset=utf-8",
+      success: function(user_paths) {
+        update_user_paths(user_paths)
+      }
+    });
+  }
+  function clear_user_path(){
+
+    $.ajax({
+      url: "/clear_user_path",
+      type: "GET",
+      success: function(result){
+        update_user_paths([])
+      }
+    })
+  }
+
+
+  /*
+  Modify view functions
+  */
+
+  function update_user_paths(user_paths){
+
+    html_str = "<div id='user_paths_id'>"
+
+    for (i = 0; i < user_paths.length; i++){
+
+      html_str += "<li id='url_id' class='list-group-item d-flex justify-content-between align-items-start'>"
+      html_str += "<div class='ms-4 me-auto'>"
+      html_str += "    <div class='fw-bold'><a href='/?path_address="+user_paths[i]+"'>"+user_paths[i]+"</a></div>"
+      html_str += "</div>"
+      html_str += "<button type='button' class='btn btn-outline-danger' onclick='remove_user_path("+'"'+user_paths[i]+'"'+")'>"
+      html_str += "  <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-trash' viewBox='0 0 16 16'>"
+      html_str += "    <path d='M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z'></path>"
+      html_str += "    <path fill-rule='evenodd' d='M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z'></path>"
+      html_str += "  </svg>Remove Path </button> </li>"
+    }
+
+    html_str += '</div>'
+    $("#user_paths_id").html(html_str)
+
+  }
+</script>
+</html>

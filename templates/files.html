@@ -1,0 +1,69 @@
+<!doctype html>
+<head>
+    <title>Available Slides</title>
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/static/js/jquery.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
+    <style>
+        h3 {
+            color: #fff;
+        }
+        body {
+            background-image: url(/static/images/background.png);
+        }
+
+        .nav-link {
+            color: #000;
+        }
+
+        .nav {
+            margin-bottom: 26px;
+            background: #fff4f430;
+            box-shadow: rgb(0 0 0 / 30%) -3px 4px 8px 1px;
+        }
+    </style>
+    <link rel="shortcut icon" href="/static/images/icon.ico">
+</head>
+<body>
+    <ul class="nav">
+        <li class="nav-item">
+          <a href="/?path_address="> <b class="nav-link active" aria-current="page">Wifi File Manager</b> </a>
+        </li>
+      </ul>
+      <div class="container">
+          <h3>Available Files</h3>
+      </div>
+    
+      <div class="container">
+
+        <ol class="list-group list-group-unnumbered">
+            {% for entry in root_dir.children recursive %}
+                <li id="url_id" class="list-group-item d-flex justify-content-between align-items-start">
+                    
+                    <div class="ms-4 me-auto">
+                        {% if entry.url_path %}
+                            <div class="fw-bold">
+                                <a href="{{ url_for('slide', path=entry.url_path) }}">
+                                    {{ entry.name }}
+                                </a>
+                            </div>
+                        {% else %}
+                            {{ entry.name }}
+                        {% endif %}
+
+                        {% if entry.children %}
+                            <ul>
+                                {{ loop(entry.children) }}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </li>
+                {% else %}
+                    <li class="none">None</li>
+                {% endfor %}
+        </ol>
+
+    </div>
+</body>
+</html>
