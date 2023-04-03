@@ -92,8 +92,9 @@ def clear_user_paths():
     user_data.clear()
     return make_response("All user paths was deleted.")
 
-@app.route('/download/<path:file_url>', methods=['GET', 'POST'])
-def download(file_url):
+@app.route('/download', methods=['GET', 'POST'])
+def download():
+    file_url = request.args.get('file_url')
     return send_file(file_url, as_attachment=True)
 
 
