@@ -24,13 +24,10 @@ app = Flask(__name__)
 app.config.from_object(__name__)
 #app.config.from_envvar('DEEPZOOM_MULTISERVER_SETTINGS', silent=True)
 user_data = UserData()
-
-@app.before_first_request
-def _setup():
-    app.basedir = None
-    app.configured = False
-    app.last_tile_name = None
-    app.last_file_name = None
+app.basedir = None
+app.configured = False
+app.last_tile_name = None
+app.last_file_name = None
 
 @app.route('/')
 def index():
@@ -76,7 +73,6 @@ def clear_user_paths():
 def download():
     file_url = request.args.get('file_url')
     return send_file(file_url, as_attachment=True)
-
 
 if sys.platform == 'darwin':
     subprocess.Popen(['open', "localhost:80"])
